@@ -63,7 +63,7 @@ function ScanForAlerts() {
 }
 
 /******************************************************************************/
-function WeeklyScanForAlerts() {
+function WeeklyScan() {
 /******************************************************************************/
   Director("WeeklyScanForAlerts", true);
 }
