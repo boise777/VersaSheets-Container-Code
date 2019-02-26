@@ -28,7 +28,10 @@ var SetupSheetName = 'Setup';
 /******************************************************************************/
 function onOpen() {
 /******************************************************************************/
-  LoadGlobals(SetupSheetName);
+  if (!LoadGlobals(SetupSheetName)){
+    Browser.msgBox("Fatal Error 010: Unable to load Globals. Please contact the developer");
+    return ;
+  }
   Director("OnOpen", false);
 } 
 
@@ -121,7 +124,10 @@ function Director(CallingFunction, bNeedParams) {
   Logger.log(func + Step + ' Build oCommon object');
   var oCommon = {};
   oCommon = LoadCommon();
-  if (oCommon.length <=0){ return; }
+  if (oCommon.length <=0){
+    Browser.msgBox("Fatal Error 012: Unable to load Common objects. Please contact the developer");
+    return ;
+  }
 
   /**************************************************************************/
   Step = 1100; // Get the parameters to pass to the CallingFunction
@@ -130,6 +136,10 @@ function Director(CallingFunction, bNeedParams) {
     Logger.log(func + Step + ' Getting oMenu Parameters');  
     var oMenuParams ={};
     var bParamsFound = VersaSheetsCommon.GetMenuParams(oCommon, CallingFunction, oMenuParams);
+    if (!bParamsFound){
+      Browser.msgBox("Fatal Error 014: Unable to load required parameters. Please contact the developer");
+      return ;
+    }
   }
   
   /**************************************************************************/
@@ -285,7 +295,7 @@ function Director(CallingFunction, bNeedParams) {
       Step = 3000; // Calling Function Not found.
       
       oCommon.ReturnMessage = func + Step + ' CallingFunction: "' + CallingFunction + '" Not found.';
-      oCommon.DisplayMessage = 'Error Encountered: CallingFunction: "' + CallingFunction + '" Not found.';
+      oCommon.DisplayMessage = 'Error 060 Encountered: CallingFunction: "' + CallingFunction + '" Not found.';
       VersaSheetsCommon.LogEvent(oCommon.ReturnMessage, oCommon);
 
       break;
