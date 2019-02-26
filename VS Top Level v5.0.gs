@@ -68,7 +68,7 @@ function ScanForAlerts() {
 /******************************************************************************/
 function WeeklyScan() {
 /******************************************************************************/
-  Director("WeeklyScanForAlerts", true);
+  Director("WeeklyScan", true);
 }
 
 /******************************************************************************/
@@ -117,6 +117,7 @@ function Director(CallingFunction, bNeedParams) {
   var title = CallingFunction + ' Procedures';
   var prog_message = 'Executing ' + CallingFunction + ' procedures...';
   VersaSheetsCommon.progressMsg(prog_message,title,-3);
+  var bNoErrors = true;
 
   /**************************************************************************/
   Step = 1000; // Load the oCommon object to the FormHandler function
@@ -127,191 +128,192 @@ function Director(CallingFunction, bNeedParams) {
   if (oCommon.length <=0){
     Browser.msgBox("Fatal Error 012: Unable to load Common objects. Please contact the developer");
     return ;
-  }
-
-  /**************************************************************************/
-  Step = 1100; // Get the parameters to pass to the CallingFunction
-  /**************************************************************************/
-  if(bNeedParams){
+  } else if(bNeedParams){
+    Step = 1100; // Get the parameters to pass to the CallingFunction
     Logger.log(func + Step + ' Getting oMenu Parameters');  
     var oMenuParams ={};
     var bParamsFound = VersaSheetsCommon.GetMenuParams(oCommon, CallingFunction, oMenuParams);
     if (!bParamsFound){
-      Browser.msgBox("Fatal Error 014: Unable to load required parameters. Please contact the developer");
-      return ;
+      //Browser.msgBox("Fatal Error 014: Unable to load required parameters. Please contact the developer");
+      bNoErrors = false ;
     }
   }
   
-  /**************************************************************************/
-  Step = 2000; // Call and pass parameters to the CallingFunction
-  /**************************************************************************/
-  switch(CallingFunction) {
-      
-    /**************************************************************************/  
-    case "OnOpen":
-    /**************************************************************************/ 
-      Step = 2010; // Execute OnOpen procedures
-      oCommon.bSilentMode = true;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-      
-      VersaSheetsCommon.onOpenProcedures(oCommon);
-      
-      try {
-        Step = 2015; // Hide the Setup Tab
-        oCommon.Sheets.getSheetByName(SetupSheetName).hideSheet();
-      }
-      catch(err) {
-        //  do nothing - probably a non-owner attempting to open the Sheet
-        Logger.log(func + Step + ' Error: ' + err);
-      }
-
-      break;
-      
-    /**************************************************************************/  
-    case "updateFormResponse":
-    /**************************************************************************/ 
-      Step = 2020; // Execute onFormSubmit procedures
-      oCommon.bSilentMode = true;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.onFormSubmit(oCommon, oMenuParams) };
-      
-      break;
-
-    /**************************************************************************/  
-    case "ProcessRequest_1":
-    /**************************************************************************/ 
-      Step = 2030; // Execute procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.GenerateItems(oCommon, oMenuParams); }
-      
-      break;
-
-    /**************************************************************************/  
-    case "ProcessRequest_2":
-    /**************************************************************************/ 
-      Step = 2030; // Execute procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.GenerateItems(oCommon, oMenuParams); }
-      
-      break;
-
-    /**************************************************************************/  
-    case "ProcessRequest_3":
-    /**************************************************************************/ 
-      Step = 2030; // Execute procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.GenerateItems(oCommon, oMenuParams); }
-      
-      break;
-      
-    /**************************************************************************/  
-    case "ScanForAlerts":
-    /**************************************************************************/  
-      Step = 2040; // Execute procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.AlertsScan(oCommon, oMenuParams); }
-      
-      break;
-      
-    /**************************************************************************/  
-    case "WeeklyScan":
-    /**************************************************************************/  
-      Step = 2050; // Execute procedures
-      oCommon.bSilentMode = true;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.AlertsScan(oCommon, oMenuParams); }
-      
-      break;
-      
-    /**************************************************************************/  
-    case "PerformCMGAudit":
-    /**************************************************************************/  
-      Step = 2040; // Execute procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-      
-      var CMGAuditTitle = '';
-      if(bParamsFound){ VersaSheetsCommon.CMGAudit(CMGAuditTitle, oCommon, oMenuParams); }
-      
-      break;
-      
-    /**************************************************************************/  
-    case "ResetGoogleForm":
-    /**************************************************************************/ 
-      Step = 2060; // Execute OnOpen procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      VersaSheetsCommon.updateFormLists(oCommon);
-      
-      break;
-      
-    /**************************************************************************/  
-    case "MoveSheetRows":
-    /**************************************************************************/ 
-      Step = 2070; // Execute onFormSubmit procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      if(bParamsFound){ VersaSheetsCommon.moveSelectedRows(oCommon, oMenuParams); }
-      
-      break;
-      
-    /**************************************************************************/  
-    case "DeleteSheetRows":
-    /**************************************************************************/ 
-      Step = 2070; // Execute onFormSubmit procedures
-      oCommon.bSilentMode = false;
-      Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                 + oCommon.bSilentMode);  
-
-      VersaSheetsCommon.deleteSelectedRows(oCommon);
-      
-      break;
-
-    /**************************************************************************/  
-    default:
-    /**************************************************************************/  
-      Step = 3000; // Calling Function Not found.
-      
-      oCommon.ReturnMessage = func + Step + ' CallingFunction: "' + CallingFunction + '" Not found.';
-      oCommon.DisplayMessage = 'Error 060 Encountered: CallingFunction: "' + CallingFunction + '" Not found.';
-      VersaSheetsCommon.LogEvent(oCommon.ReturnMessage, oCommon);
-
-      break;
-  }  
-  
+  if (bNoErrors){
+    /**************************************************************************/
+    Step = 2000; // Call and pass parameters to the CallingFunction
+    /**************************************************************************/
+    switch(CallingFunction) {
+        
+        /**************************************************************************/  
+      case "OnOpen":
+        /**************************************************************************/ 
+        Step = 2010; // Execute OnOpen procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.onOpenProcedures(oCommon);
+        
+        try {
+          Step = 2015; // Hide the Setup Tab
+          oCommon.Sheets.getSheetByName(SetupSheetName).hideSheet();
+        }
+        catch(err) {
+          //  do nothing - probably a non-owner attempting to open the Sheet
+          Logger.log(func + Step + ' Error: ' + err);
+        }
+        
+        break;
+        
+        /**************************************************************************/  
+      case "updateFormResponse":
+        /**************************************************************************/ 
+        Step = 2020; // Execute onFormSubmit procedures
+        oCommon.bSilentMode = true;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.onFormSubmit(oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "ProcessRequest_1":
+        /**************************************************************************/ 
+        Step = 2030; // Execute procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.GenerateItems(oCommon, oMenuParams); 
+        
+        break;
+        
+        /**************************************************************************/  
+      case "ProcessRequest_2":
+        /**************************************************************************/ 
+        Step = 2030; // Execute procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.GenerateItems(oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "ProcessRequest_3":
+        /**************************************************************************/ 
+        Step = 2030; // Execute procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.GenerateItems(oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "ScanForAlerts":
+        /**************************************************************************/  
+        Step = 2040; // Execute procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.AlertsScan(oCommon, oMenuParams); 
+        
+        break;
+        
+        /**************************************************************************/  
+      case "WeeklyScan":
+        /**************************************************************************/  
+        Step = 2050; // Execute procedures
+        oCommon.bSilentMode = true;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.AlertsScan(oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "PerformCMGAudit":
+        /**************************************************************************/  
+        Step = 2040; // Execute procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        var CMGAuditTitle = '';
+        VersaSheetsCommon.CMGAudit(CMGAuditTitle, oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "ResetGoogleForm":
+        /**************************************************************************/ 
+        Step = 2060; // Execute OnOpen procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.updateFormLists(oCommon);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "MoveSheetRows":
+        /**************************************************************************/ 
+        Step = 2070; // Execute onFormSubmit procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.moveSelectedRows(oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "DeleteSheetRows":
+        /**************************************************************************/ 
+        Step = 2070; // Execute onFormSubmit procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.deleteSelectedRows(oCommon);
+        
+        break;
+        
+        /**************************************************************************/  
+      default:
+        /**************************************************************************/  
+        Step = 3000; // Calling Function Not found.
+        
+        oCommon.ReturnMessage = func + Step + ' CallingFunction: "' + CallingFunction + '" Not found.';
+        oCommon.DisplayMessage = 'Error 060 Encountered: CallingFunction: "' + CallingFunction + '" Not found.';
+        VersaSheetsCommon.LogEvent(oCommon.ReturnMessage, oCommon);
+        
+        break;
+    }  
+  }
   /**************************************************************************/
   Step = 5000; // Display / record Success / Failure messages
   /**************************************************************************/
+  Logger.log(func + Step + ' Return Message: ' + oCommon.ReturnMessage);
+  Logger.log(func + Step + ' Display Message: ' + oCommon.DisplayMessage);
+  Logger.log(func + Step + ' bSilentMode: ' + oCommon.bSilentMode);
+
+  VersaSheetsCommon.WriteEventMessages("", oCommon);
+  
   if (oCommon.DisplayMessage != ''){
     VersaSheetsCommon.progressMsg(oCommon.DisplayMessage,title,3);
     if(!oCommon.bSilentMode){
       Browser.msgBox(oCommon.DisplayMessage);
     }
   }
-  
-  VersaSheetsCommon.WriteEventMessages(oCommon.ReturnMessage, oCommon);
   
   VersaSheetsCommon.progressMsg("Bye, bye now!...",title,3);
 
@@ -364,9 +366,9 @@ function LoadGlobals(SetupSheetName) {
   }
   
   //Step = 1100; // Verify results
-for(var Key in Globals){
-    Logger.log(func + Step + ' Key:' + Key + '  Value: ' + Globals[Key]);
-}
+  //for(var Key in Globals){
+  //    Logger.log(func + Step + ' Key:' + Key + '  Value: ' + Globals[Key]);
+  //}
   
   /******************************************************************************/
   Step = 2000; //Set Persistent variable values for this container using the Properties Service
