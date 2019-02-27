@@ -28,8 +28,9 @@ var SetupSheetName = 'Setup';
 /******************************************************************************/
 function onOpen() {
 /******************************************************************************/
-  if (!LoadGlobals(SetupSheetName)){
-    Browser.msgBox("Fatal Error 010: Unable to load Globals. Please contact the developer");
+  var ReturnMessage = null;
+  if (!LoadGlobals(SetupSheetName, ReturnMessage)){
+    Browser.msgBox(ReturnMessage + ' Please contact the developer.');
     return ;
   }
   Director("OnOpen", false);
@@ -124,16 +125,19 @@ function Director(CallingFunction, bNeedParams) {
   /**************************************************************************/
   Logger.log(func + Step + ' Build oCommon object');
   var oCommon = {};
+  var ReturnMessage = null;
   oCommon = LoadCommon();
   if (oCommon.length <=0){
-    Browser.msgBox("Fatal Error 012: Unable to load Common objects. Please contact the developer");
+    Step = 1100; 
+    Browser.msgBox(' Error 012: Unable to load Common objects. Please contact the developer.');
     return ;
   } else if(bNeedParams){
-    Step = 1100; // Get the parameters to pass to the CallingFunction
+    Step = 1200; // Get the parameters to pass to the CallingFunction
     Logger.log(func + Step + ' Getting oMenu Parameters');  
     var oMenuParams ={};
     var bParamsFound = VersaSheetsCommon.GetMenuParams(oCommon, CallingFunction, oMenuParams);
     if (!bParamsFound){
+      Step = 1200; 
       //Browser.msgBox("Fatal Error 014: Unable to load required parameters. Please contact the developer");
       bNoErrors = false ;
     }
@@ -158,6 +162,10 @@ function Director(CallingFunction, bNeedParams) {
         try {
           Step = 2015; // Hide the Setup Tab
           oCommon.Sheets.getSheetByName(SetupSheetName).hideSheet();
+          Step = 2016; // Hide the Event Messsages Tab, if it is used
+          if (oCommon.EventMesssagesTab){
+            oCommon.Sheets.getSheetByName(oCommon.EventMesssagesTab).hideSheet();  
+          }
         }
         catch(err) {
           //  do nothing - probably a non-owner attempting to open the Sheet
@@ -335,14 +343,14 @@ function Director(CallingFunction, bNeedParams) {
 ****************************************************************************************************************
 ***************************************************************************************************************/
 
-function LoadGlobals(SetupSheetName) {
+function LoadGlobals(SetupSheetName, ReturnMessage) {
   /* ****************************************************************************
 
    DESCRIPTION:
      This function is invoked whenever the Globals have not been previously loaded
      
    USEAGE
-     var ReturnBool = LoadGlobals(SetupSheetName);
+     var ReturnBool = LoadGlobals(SetupSheetName, ReturnMessage);
 
    REVISION DATE:
     03-23-2018 - First Instance when discovered that Globals were not persisting in this container
@@ -359,9 +367,9 @@ function LoadGlobals(SetupSheetName) {
   /*******************************************************************************/
   var Globals = {};
   var oSourceSheets = SpreadsheetApp.getActiveSpreadsheet();
-  var Globals = VersaSheetsCommon.BuildGlobals(oSourceSheets,SetupSheetName);
-  if (Globals.length <=0){
-    Logger.log(func + Step + ' Error - No Globals values found.');
+  var Globals = VersaSheetsCommon.BuildGlobals(oSourceSheets,SetupSheetName, ReturnMessage);
+  if (ReturnMessage != null){
+    Logger.log(func + Step + ' (' + ReturnMessage + ')');
     return false;
   }
   
