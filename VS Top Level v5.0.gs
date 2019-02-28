@@ -37,9 +37,9 @@ function onOpen() {
 } 
 
 /******************************************************************************/
-function updateFormResponse() {
+function updateFormResponse(e) {
 /******************************************************************************/
-  Director("updateFormResponse", true);
+  Director("updateFormResponse", true, e);
 } 
   
 /******************************************************************************/
@@ -108,7 +108,7 @@ function EmergencyLockRelease(){
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
-function Director(CallingFunction, bNeedParams) {
+function Director(CallingFunction, bNeedParams, e) {
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
@@ -180,9 +180,19 @@ function Director(CallingFunction, bNeedParams) {
         Step = 2020; // Execute onFormSubmit procedures
         oCommon.bSilentMode = true;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
-                   + oCommon.bSilentMode);  
+                   + oCommon.bSilentMode);
         
-        VersaSheetsCommon.onFormSubmit(oCommon, oMenuParams);
+        Step = 2022; // Get the timestamp value from e.values[0]
+        oCommon.FormTimestamp = e.values[0];
+        if (VersaSheetsCommon.ParamCheck(oCommon.FormTimestamp)){
+          VersaSheetsCommon.onFormSubmit(oCommon, oMenuParams);
+        } else {
+          Step = 2024; // No Timestamp value found, Log the ERROR Event and quit
+          oCommon.DisplayMessage = ' ERROR 014 - Timestamp value not passed by onSubmit trigger event.';
+          oCommon.ReturnMessage  = func + Step + oCommon.DisplayMessage;
+          VersaSheetsCommon.LogEvent(oCommon.ReturnMessage, oCommon);
+          Logger.log(oCommon.ReturnMessage);
+        }
         
         break;
         
@@ -389,7 +399,7 @@ function LoadGlobals(SetupSheetName, ReturnMessage) {
  
 }
 
-function LoadCommon() {
+function LoadCommon(e) {
   /* ****************************************************************************
 
    DESCRIPTION:
@@ -418,7 +428,7 @@ function LoadCommon() {
   Step = 1000; // Build the oCommon object
   /******************************************************************************/
   var oCommon = {};
-  var oCommon = VersaSheetsCommon.BuildCommon(Sheets,Globals);
+  var oCommon = VersaSheetsCommon.BuildCommon(Sheets,Globals,e);
   // Verify oCommon
   //for(var Key in oCommon){
   //   Logger.log(func + Step + ' Key:' + Key + '  Value: ' + oCommon[Key]);
