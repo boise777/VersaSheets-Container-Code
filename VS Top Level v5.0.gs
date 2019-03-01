@@ -112,7 +112,7 @@ function Director(CallingFunction, bNeedParams, e) {
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
-  var func = '******* Director ' + Version + ' - ';
+  var func = '** Director ' + Version + ' - ';
   var Step = 100;
   Logger.log(func + Step + ' BEGIN Steps for "' + CallingFunction + '"');
   var title = CallingFunction + ' Procedures';
@@ -183,8 +183,10 @@ function Director(CallingFunction, bNeedParams, e) {
                    + oCommon.bSilentMode);
         
         Step = 2022; // Get the timestamp value from e.values[0]
-        oCommon.FormTimestamp = e.values[0];
+        oCommon.eParams = e;
+        oCommon.FormTimestamp = oCommon.eParams.values[oCommon.TimestampCol];
         if (VersaSheetsCommon.ParamCheck(oCommon.FormTimestamp)){
+          Logger.log(func + Step + ' FormTimestamp: ' + oCommon.FormTimestamp);
           VersaSheetsCommon.onFormSubmit(oCommon, oMenuParams);
         } else {
           Step = 2024; // No Timestamp value found, Log the ERROR Event and quit
