@@ -115,17 +115,16 @@ function Director(CallingFunction, bNeedParams, e) {
   var func = '** Director ' + Version + ' - ';
   var Step = 100;
   Logger.log(func + Step + ' BEGIN Steps for "' + CallingFunction + '"');
-  var title = CallingFunction + ' Procedures';
-  var prog_message = 'Executing ' + CallingFunction + ' procedures...';
-  VersaSheetsCommon.progressMsg(prog_message,title,-3);
   var bNoErrors = true;
-
+  var title = CallingFunction + ' Procedures';
+ 
   /**************************************************************************/
   Step = 1000; // Load the oCommon object to the FormHandler function
   /**************************************************************************/
   Logger.log(func + Step + ' Build oCommon object');
   var oCommon = {};
   var ReturnMessage = null;
+  
   oCommon = LoadCommon();
   if (oCommon.length <=0){
     Step = 1100; 
@@ -136,7 +135,11 @@ function Director(CallingFunction, bNeedParams, e) {
     Logger.log(func + Step + ' Getting oMenu Parameters');  
     var oMenuParams ={};
     var bParamsFound = VersaSheetsCommon.GetMenuParams(oCommon, CallingFunction, oMenuParams);
-    if (!bParamsFound){
+    if (bParamsFound){
+      title = oMenuParams["Menu Title"];
+      oCommon.CallingMenuItem = title;
+      //oMenuParams["Function Name"] = functionName;
+    } else {
       Step = 1200; 
       //Browser.msgBox("Fatal Error 014: Unable to load required parameters. Please contact the developer");
       bNoErrors = false ;
@@ -144,6 +147,11 @@ function Director(CallingFunction, bNeedParams, e) {
   }
   
   if (bNoErrors){
+    
+    // Communicate wit user
+    var prog_message = 'Initializing...';
+    VersaSheetsCommon.progressMsg(prog_message,title,-3);
+      
     /**************************************************************************/
     Step = 2000; // Call and pass parameters to the CallingFunction
     /**************************************************************************/
@@ -158,6 +166,7 @@ function Director(CallingFunction, bNeedParams, e) {
                    + oCommon.bSilentMode);  
         
         VersaSheetsCommon.onOpenProcedures(oCommon);
+        
         
         try {
           Step = 2015; // Hide the Setup Tab
@@ -332,7 +341,7 @@ function Director(CallingFunction, bNeedParams, e) {
   if (oCommon.DisplayMessage != ''){
     VersaSheetsCommon.progressMsg(oCommon.DisplayMessage,title,3);
     if(!oCommon.bSilentMode){
-      Browser.msgBox(oCommon.DisplayMessage);
+      Browser.msgBox(title, oCommon.DisplayMessage, Browser.Buttons.OK);
     }
   }
   
@@ -355,6 +364,13 @@ function Director(CallingFunction, bNeedParams, e) {
 ****************************************************************************************************************
 ****************************************************************************************************************
 ***************************************************************************************************************/
+
+function RunTime(start) {
+  // Useage:  RunTime = RunTime(start);
+  var stop = new Date();
+  var Runtime = Number(stop) - Number(start); // in milliseconds
+  return Runtime;
+}
 
 function LoadGlobals(SetupSheetName, ReturnMessage) {
   /* ****************************************************************************
