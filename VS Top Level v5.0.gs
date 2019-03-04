@@ -161,7 +161,7 @@ function Director(CallingFunction, bNeedParams, e) {
       case "OnOpen":
         /**************************************************************************/ 
         Step = 2010; // Execute OnOpen procedures
-        oCommon.bSilentMode = false;
+        oCommon.bSilentMode = true;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
         
