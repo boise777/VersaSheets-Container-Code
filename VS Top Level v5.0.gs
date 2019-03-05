@@ -28,8 +28,9 @@ var SetupSheetName = 'Setup';
 /******************************************************************************/
 function onOpen() {
 /******************************************************************************/
-  var ReturnMessage = null;
-  if (!LoadGlobals(SetupSheetName, ReturnMessage)){
+  var ReturnMessage = LoadGlobals(SetupSheetName);
+  
+  if (ReturnMessage != true){
     Browser.msgBox(ReturnMessage + ' Please contact the developer.');
     return ;
   }
@@ -126,10 +127,11 @@ function Director(CallingFunction, bNeedParams, e) {
   var ReturnMessage = null;
   
   oCommon = LoadCommon();
-  if (oCommon.length <=0){
+  
+  if (oCommon.FatalErrorMessage != null){
     Step = 1100; 
-    Browser.msgBox(' Error 012: Unable to load Common objects. Please contact the developer.');
-    return ;
+    Browser.msgBox(oCommon.FatalErrorMessage);
+    bNoErrors = false ;
   } else if(bNeedParams){
     Step = 1200; // Get the parameters to pass to the CallingFunction
     Logger.log(func + Step + ' Getting oMenu Parameters');  
@@ -148,7 +150,7 @@ function Director(CallingFunction, bNeedParams, e) {
   
   if (bNoErrors){
     
-    // Communicate wit user
+    // Communicate with user
     var prog_message = 'Initializing...';
     VersaSheetsCommon.progressMsg(prog_message,title,-3);
       
@@ -372,14 +374,14 @@ function RunTime(start) {
   return Runtime;
 }
 
-function LoadGlobals(SetupSheetName, ReturnMessage) {
+function LoadGlobals(SetupSheetName) {
   /* ****************************************************************************
 
    DESCRIPTION:
      This function is invoked whenever the Globals have not been previously loaded
      
    USEAGE
-     var ReturnBool = LoadGlobals(SetupSheetName, ReturnMessage);
+     ReturnMessage = LoadGlobals(SetupSheetName);
 
    REVISION DATE:
     03-23-2018 - First Instance when discovered that Globals were not persisting in this container
@@ -396,10 +398,12 @@ function LoadGlobals(SetupSheetName, ReturnMessage) {
   /*******************************************************************************/
   var Globals = {};
   var oSourceSheets = SpreadsheetApp.getActiveSpreadsheet();
-  var Globals = VersaSheetsCommon.BuildGlobals(oSourceSheets,SetupSheetName, ReturnMessage);
-  if (ReturnMessage != null){
-    Logger.log(func + Step + ' (' + ReturnMessage + ')');
-    return false;
+  var Globals = VersaSheetsCommon.BuildGlobals(oSourceSheets,SetupSheetName);
+  Logger.log(func + Step + Globals['ErrorMessage']);
+  
+  if (Globals['ErrorMessage']){
+    Logger.log(func + Step + ' (' + Globals['ErrorMessage'] + ')');
+    return Globals['ErrorMessage'];
   }
   
   //Step = 1100; // Verify results
