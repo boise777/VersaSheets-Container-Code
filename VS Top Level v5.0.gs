@@ -342,7 +342,7 @@ function Director(CallingFunction, bNeedParams, e) {
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
         
-        VersaSheetsCommon.OpenCloseForms(oCommon);
+        VersaSheetsCommon.OpenCloseForms(oCommon, oMenuParams);
         
         break;
         
