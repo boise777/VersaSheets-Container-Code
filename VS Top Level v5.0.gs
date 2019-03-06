@@ -31,9 +31,14 @@ function onOpen() {
   var ReturnMessage = LoadGlobals(SetupSheetName);
   
   if (ReturnMessage != true){
-    Browser.msgBox(ReturnMessage + ' Please contact the developer.');
-    return ;
+    // Fatal if "ERROR" is detected  
+    if (ReturnMessage.toUpperCase().indexOf("ERROR") > -1){
+      Logger.log(func + Step + ' (' + ReturnMessage + ')');
+      Browser.msgBox(ReturnMessage + ' Please contact the developer.');
+      return ;
+    }
   }
+    
   Director("OnOpen", false);
 } 
 
@@ -99,11 +104,16 @@ function PerformCMGAudit(){
 
 /******************************************************************************/
 function EmergencyLockRelease(){
+/******************************************************************************/
   var lock = LockService.getPublicLock();
   lock.releaseLock();
 }
-/******************************************************************************/
 
+/******************************************************************************/
+function OpenCloseForms(){
+/******************************************************************************/
+  Director("OpenCloseForms", true);
+}  
 
 
 /******************************************************************************/
@@ -149,10 +159,15 @@ function Director(CallingFunction, bNeedParams, e) {
   }
   
   if (bNoErrors){
-    
     // Communicate with user
     var prog_message = 'Initializing...';
     VersaSheetsCommon.progressMsg(prog_message,title,-3);
+    
+    // Capture / document any warnings that might have been found loading Globals
+    if (oCommon.Globals['ErrorMessage'].toUpperCase().indexOf("WARNING") > -1){
+      Logger.log(func + Step + ' (' + oCommon.Globals['ErrorMessage'] + ')');
+      VersaSheetsCommon.LogEvent(oCommon.Globals['ErrorMessage'], oCommon);
+    }
       
     /**************************************************************************/
     Step = 2000; // Call and pass parameters to the CallingFunction
@@ -316,6 +331,18 @@ function Director(CallingFunction, bNeedParams, e) {
                    + oCommon.bSilentMode);  
         
         VersaSheetsCommon.deleteSelectedRows(oCommon);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "OpenCloseForms":
+        /**************************************************************************/ 
+        Step = 2070; // Execute OpenCloseForms procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
+        
+        VersaSheetsCommon.OpenCloseForms(oCommon);
         
         break;
         
