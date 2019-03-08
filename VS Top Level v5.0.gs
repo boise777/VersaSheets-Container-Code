@@ -110,9 +110,15 @@ function EmergencyLockRelease(){
 }
 
 /******************************************************************************/
-function OpenCloseForms(){
+function CloseForms(){
 /******************************************************************************/
-  Director("OpenCloseForms", true);
+  Director("CloseForms", true);
+}  
+
+/******************************************************************************/
+function OpenForms(){
+/******************************************************************************/
+  Director("OpenForms", true);
 }  
 
 
@@ -288,7 +294,7 @@ function Director(CallingFunction, bNeedParams, e) {
         /**************************************************************************/  
       case "PerformCMGAudit":
         /**************************************************************************/  
-        Step = 2040; // Execute procedures
+        Step = 2060; // Execute procedures
         oCommon.bSilentMode = false;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
@@ -301,7 +307,7 @@ function Director(CallingFunction, bNeedParams, e) {
         /**************************************************************************/  
       case "ResetGoogleForm":
         /**************************************************************************/ 
-        Step = 2060; // Execute OnOpen procedures
+        Step = 2070; // Execute OnOpen procedures
         oCommon.bSilentMode = false;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
@@ -313,7 +319,7 @@ function Director(CallingFunction, bNeedParams, e) {
         /**************************************************************************/  
       case "MoveSheetRows":
         /**************************************************************************/ 
-        Step = 2070; // Execute onFormSubmit procedures
+        Step = 2080; // Execute onFormSubmit procedures
         oCommon.bSilentMode = false;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
@@ -325,7 +331,7 @@ function Director(CallingFunction, bNeedParams, e) {
         /**************************************************************************/  
       case "DeleteSheetRows":
         /**************************************************************************/ 
-        Step = 2070; // Execute onFormSubmit procedures
+        Step = 2090; // Execute onFormSubmit procedures
         oCommon.bSilentMode = false;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
@@ -335,9 +341,9 @@ function Director(CallingFunction, bNeedParams, e) {
         break;
         
         /**************************************************************************/  
-      case "OpenCloseForms":
+      case "CloseForms":
         /**************************************************************************/ 
-        Step = 2070; // Execute OpenCloseForms procedures
+        Step = 2100; // Execute OpenCloseForms procedures
         oCommon.bSilentMode = false;
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);  
@@ -345,7 +351,19 @@ function Director(CallingFunction, bNeedParams, e) {
         VersaSheetsCommon.OpenCloseForms(oCommon, oMenuParams);
         
         break;
+         
+        /**************************************************************************/  
+      case "OpenForms":
+        /**************************************************************************/ 
+        Step = 2110; // Execute OpenCloseForms procedures
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);  
         
+        VersaSheetsCommon.OpenCloseForms(oCommon, oMenuParams);
+        
+        break;
+       
         /**************************************************************************/  
       default:
         /**************************************************************************/  
@@ -426,17 +444,6 @@ function LoadGlobals(SetupSheetName) {
   var Globals = {};
   var oSourceSheets = SpreadsheetApp.getActiveSpreadsheet();
   var Globals = VersaSheetsCommon.BuildGlobals(oSourceSheets,SetupSheetName);
-  Logger.log(func + Step + Globals['ErrorMessage']);
-  
-  if (Globals['ErrorMessage']){
-    Logger.log(func + Step + ' (' + Globals['ErrorMessage'] + ')');
-    return Globals['ErrorMessage'];
-  }
-  
-  //Step = 1100; // Verify results
-  //for(var Key in Globals){
-  //    Logger.log(func + Step + ' Key:' + Key + '  Value: ' + Globals[Key]);
-  //}
   
   /******************************************************************************/
   Step = 2000; //Set Persistent variable values for this container using the Properties Service
@@ -444,6 +451,12 @@ function LoadGlobals(SetupSheetName) {
   var scriptProperties = PropertiesService.getScriptProperties();
   scriptProperties.deleteAllProperties();  
   scriptProperties.setProperties(Globals);
+  
+  Logger.log(func + Step + Globals['ErrorMessage']);
+  if (Globals['ErrorMessage']){
+    Logger.log(func + Step + ' (' + Globals['ErrorMessage'] + ')');
+    return Globals['ErrorMessage'];
+  }
   
   return true;
  
