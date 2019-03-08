@@ -158,21 +158,26 @@ function Director(CallingFunction, bNeedParams, e) {
       oCommon.CallingMenuItem = title;
       //oMenuParams["Function Name"] = functionName;
     } else {
-      Step = 1200; 
+      Step = 1300; 
       //Browser.msgBox("Fatal Error 014: Unable to load required parameters. Please contact the developer");
       bNoErrors = false ;
     }
   }
   
   if (bNoErrors){
-    // Communicate with user
+    Step = 1400; // Communicate with user
     var prog_message = 'Initializing...';
     VersaSheetsCommon.progressMsg(prog_message,title,-3);
     
-    // Capture / document any warnings that might have been found loading Globals
+    Step = 1500; // Capture / document any warnings that might have been found loading Globals
     if (oCommon.Globals['ErrorMessage'].toUpperCase().indexOf("WARNING") > -1){
       Logger.log(func + Step + ' (' + oCommon.Globals['ErrorMessage'] + ')');
       VersaSheetsCommon.LogEvent(oCommon.Globals['ErrorMessage'], oCommon);
+      
+      Step = 1510; // Clear the error message after it is posted
+      var scriptProperties = PropertiesService.getScriptProperties();
+      scriptProperties.setProperty('ErrorMessage', '');
+      
     }
       
     /**************************************************************************/
