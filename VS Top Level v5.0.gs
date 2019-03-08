@@ -1,4 +1,5 @@
-/*************************** Build 3/8/2019 **********************************
+/********************************* Build 3/8/2019 (rev 2) **********************************
+
 
  DESCRIPTION:
     
@@ -222,6 +223,13 @@ function Director(CallingFunction, bNeedParams, e) {
         Step = 2022; // Get the timestamp value from e.values[0]
         oCommon.eParams = e;
         var triggerUid = oCommon.eParams.triggerUid;
+        
+        //Logger.log(func + Step + ' TimestampCol: ' + oCommon.TimestampCol);
+        //for (var n = 0; n < oCommon.eParams.values.length; n++){
+        //  Logger.log(func + Step + ' n: ' + n + ', e.values[n]: ' + oCommon.eParams.values[n]);
+        //}
+        //Logger.log(func + Step + ' FormTimestamp: ' + oCommon.eParams.values[oCommon.TimestampCol]);
+        
         oCommon.FormTimestamp = oCommon.eParams.values[oCommon.TimestampCol];
         if (VersaSheetsCommon.ParamCheck(oCommon.FormTimestamp)){
           Logger.log(func + Step + ' triggerUid: ' + triggerUid + ', FormTimestamp: ' + oCommon.FormTimestamp);
