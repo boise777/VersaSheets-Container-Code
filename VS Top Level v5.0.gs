@@ -1,4 +1,4 @@
-/********************************* Build 3/8/2019 (rev 2) **********************************
+/********************************* Build 3/8/2019 (rev 3) **********************************
 
 
  DESCRIPTION:
@@ -122,6 +122,11 @@ function OpenForms(){
   Director("OpenForms", true);
 }  
 
+/******************************************************************************/
+function ReSubmit(){
+/******************************************************************************/
+  Director("ReSubmit", false);
+}  
 
 /******************************************************************************/
 /******************************************************************************/
@@ -374,6 +379,19 @@ function Director(CallingFunction, bNeedParams, e) {
                    + oCommon.bSilentMode);  
         
         VersaSheetsCommon.OpenCloseForms(oCommon, oMenuParams);
+        
+        break;
+        
+        /**************************************************************************/  
+      case "ReSubmit":
+        /**************************************************************************/ 
+        Step = 2120; // Ree-execute onFormSubmit procedures using the Timestamp
+                     //   taken from the form response data sheet
+        oCommon.bSilentMode = false;
+        Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
+                   + oCommon.bSilentMode);
+        
+        VersaSheetsCommon.FixSubmitError(oCommon);
         
         break;
        
