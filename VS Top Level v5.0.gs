@@ -1,4 +1,4 @@
-/********************************* Build 3/10/2019 (rev 2) **********************************
+/********************************* Build 3/11/2019 (rev 1) **********************************
 
 
  DESCRIPTION:
@@ -123,9 +123,9 @@ function OpenForms(){
 }  
 
 /******************************************************************************/
-function ReSubmit(){
+function RestoreRows(){
 /******************************************************************************/
-  Director("ReSubmit", false);
+  Director("RestoreRows", false);
 }  
 
 /******************************************************************************/
@@ -378,7 +378,7 @@ function Director(CallingFunction, bNeedParams, e) {
         break;
         
         /**************************************************************************/  
-      case "ReSubmit":
+      case "RestoreRows":
         /**************************************************************************/ 
         Step = 2120; // Ree-execute onFormSubmit procedures using the Timestamp
                      //   taken from the form response data sheet
@@ -386,7 +386,7 @@ function Director(CallingFunction, bNeedParams, e) {
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);
         
-        VersaSheetsCommon.FixSubmitError(oCommon);
+        VersaSheetsCommon.RestoreRows(oCommon);
         
         break;
        
