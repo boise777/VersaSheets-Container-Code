@@ -1,4 +1,4 @@
-/********************************* Build 3/10/2019 (rev 1) **********************************
+/********************************* Build 3/10/2019 (rev 2) **********************************
 
 
  DESCRIPTION:
@@ -34,7 +34,7 @@ function onOpen() {
   if (ReturnMessage != true){
     // Fatal if "ERROR" is detected  
     if (ReturnMessage.toUpperCase().indexOf("ERROR") > -1){
-      Logger.log(func + Step + ' (' + ReturnMessage + ')');
+      Logger.log('*onOpen() ' + ReturnMessage);
       Browser.msgBox(ReturnMessage + ' Please contact the developer.');
       return ;
     }
