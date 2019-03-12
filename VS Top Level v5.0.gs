@@ -1,4 +1,4 @@
-/********************************* Build 3/11/2019 (rev 1) **********************************
+/********************************* Build 3/12/2019 (rev 2) **********************************
 
 
  DESCRIPTION:
@@ -34,7 +34,7 @@ function onOpen() {
   if (ReturnMessage != true){
     // Fatal if "ERROR" is detected  
     if (ReturnMessage.toUpperCase().indexOf("ERROR") > -1){
-      Logger.log('*onOpen() ' + ReturnMessage);
+      Logger.log(func + Step + ' (' + ReturnMessage + ')');
       Browser.msgBox(ReturnMessage + ' Please contact the developer.');
       return ;
     }
@@ -123,9 +123,9 @@ function OpenForms(){
 }  
 
 /******************************************************************************/
-function RestoreRows(){
+function ReSubmit(){
 /******************************************************************************/
-  Director("RestoreRows", false);
+  Director("ReSubmit", false);
 }  
 
 /******************************************************************************/
@@ -378,7 +378,7 @@ function Director(CallingFunction, bNeedParams, e) {
         break;
         
         /**************************************************************************/  
-      case "RestoreRows":
+      case "ReSubmit":
         /**************************************************************************/ 
         Step = 2120; // Ree-execute onFormSubmit procedures using the Timestamp
                      //   taken from the form response data sheet
@@ -386,7 +386,7 @@ function Director(CallingFunction, bNeedParams, e) {
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);
         
-        VersaSheetsCommon.RestoreRows(oCommon);
+        VersaSheetsCommon.FixSubmitError(oCommon);
         
         break;
        
