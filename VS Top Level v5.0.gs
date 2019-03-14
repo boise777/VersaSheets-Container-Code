@@ -1,4 +1,4 @@
-/********************************* Build 3/13/2019 (rev 2) **********************************
+/********************************* Build 3/14/2019 (rev 1) **********************************
 
 
  DESCRIPTION:
@@ -46,22 +46,36 @@ function onOpenProcedures() {
 /******************************************************************************/
 function updateFormResponse(e) {
 /******************************************************************************/
-  // Test to reject multiple submission
-  //Sleep for 1 second to give the pervious submit time to complete this section of code
-  Utilities.sleep(1000); 
+  // GateKeeper used to reject multiple submission
+  var Step = 1000;
   var scriptProperties = PropertiesService.getScriptProperties();
+  var bGateOpen = scriptProperties.getProperty('bGateOpen');
+  if (!bGateOpen){
+    Utilities.sleep(1000); // Wait for the Gate to open
+  }
+  scriptProperties.setProperty('bGateOpen', false);  
   var LastTimestamp = scriptProperties.getProperty('LastSubmitTimestamp');
   var CurrentTimestamp = e.namedValues['Timestamp'];
-  if (LastTimestamp == CurrentTimestamp){
-    // stop immediately
-    Logger.log(' *updateFormResponse() Submit ERROR - LastSubmitTimestamp: ' + LastTimestamp
+  var dC = new Date(CurrentTimestamp).getTime();
+  if (LastTimestamp !== ''){
+    var dL = new Date(LastTimestamp).getTime();
+  } else {
+    var dL = 0;
+  }
+  var mDiff = Math.abs((dL - dC)/1000);  // time difference in seconds
+
+  if (mDiff < 10){
+    Step = 1100;// stop immediately
+    Logger.log(' *updateFormResponse() ' + Step + ' Submit ERROR - LastSubmitTimestamp: ' + LastTimestamp
                + ', CurrentTimestamp: ' + CurrentTimestamp);
+    scriptProperties.setProperty('bGateOpen', true);
     return;
   } else {
-    // Set the property and proceed
-    scriptProperties.setProperty('LastSubmitTimestamp',CurrentTimestamp);
-    Logger.log(' *updateFormResponse() Submit OK - LastSubmitTimestamp: ' + LastTimestamp
+    Step = 1200;// Set the property and proceed
+    scriptProperties.setProperty('LastSubmitTimestamp', CurrentTimestamp.toString());
+    Logger.log(' *updateFormResponse() ' + Step + ' Submit OK - LastSubmitTimestamp: ' + LastTimestamp
                + ', CurrentTimestamp: ' + CurrentTimestamp);
+    scriptProperties.setProperty('bGateOpen', true); 
   }
   Director("updateFormResponse", true, e);
 } 
@@ -494,10 +508,11 @@ function LoadGlobals(SetupSheetName) {
   var scriptProperties = PropertiesService.getScriptProperties();
   scriptProperties.deleteAllProperties();  
   scriptProperties.setProperties(Globals);
-  // Sets the user property 'LastSubmitTimestamp'.
+  // Sets the script properties for GateKeeper code to prevent multiple submissions for same Form response.
   scriptProperties.setProperty('LastSubmitTimestamp', '');
+  scriptProperties.setProperty('bGateOpen', true);
   
-  Logger.log(func + Step + Globals['ErrorMessage']);
+  Logger.log(func + Step + ' GlobalsErrorMessage: ' + Globals['ErrorMessage']);
   if (Globals['ErrorMessage']){
     Logger.log(func + Step + ' (' + Globals['ErrorMessage'] + ')');
     return Globals['ErrorMessage'];
