@@ -1,4 +1,4 @@
-/********************************* Build 3/12/2019 (rev 2) **********************************
+/********************************* Build 3/13/2019 (rev 2) **********************************
 
 
  DESCRIPTION:
@@ -27,14 +27,14 @@ var Version = "(v5.0)";
 var SetupSheetName = 'Setup';
 
 /******************************************************************************/
-function onOpen() {
+function onOpenProcedures() {
 /******************************************************************************/
   var ReturnMessage = LoadGlobals(SetupSheetName);
   
   if (ReturnMessage != true){
     // Fatal if "ERROR" is detected  
     if (ReturnMessage.toUpperCase().indexOf("ERROR") > -1){
-      Logger.log(func + Step + ' (' + ReturnMessage + ')');
+      Logger.log(' *onOpen Fatal Error: ' + ReturnMessage );
       Browser.msgBox(ReturnMessage + ' Please contact the developer.');
       return ;
     }
@@ -46,6 +46,23 @@ function onOpen() {
 /******************************************************************************/
 function updateFormResponse(e) {
 /******************************************************************************/
+  // Test to reject multiple submission
+  //Sleep for 1 second to give the pervious submit time to complete this section of code
+  Utilities.sleep(1000); 
+  var scriptProperties = PropertiesService.getScriptProperties();
+  var LastTimestamp = scriptProperties.getProperty('LastSubmitTimestamp');
+  var CurrentTimestamp = e.namedValues['Timestamp'];
+  if (LastTimestamp == CurrentTimestamp){
+    // stop immediately
+    Logger.log(' *updateFormResponse() Submit ERROR - LastSubmitTimestamp: ' + LastTimestamp
+               + ', CurrentTimestamp: ' + CurrentTimestamp);
+    return;
+  } else {
+    // Set the property and proceed
+    scriptProperties.setProperty('LastSubmitTimestamp',CurrentTimestamp);
+    Logger.log(' *updateFormResponse() Submit OK - LastSubmitTimestamp: ' + LastTimestamp
+               + ', CurrentTimestamp: ' + CurrentTimestamp);
+  }
   Director("updateFormResponse", true, e);
 } 
   
@@ -418,7 +435,7 @@ function Director(CallingFunction, bNeedParams, e) {
     }
   }
   
-  VersaSheetsCommon.progressMsg("Bye, bye now!...",title,3);
+  VersaSheetsCommon.progressMsg("Bye, bye now!...",title,5);
 
   Step = 9999;
   Logger.log(func + Step + ' END');
@@ -477,6 +494,8 @@ function LoadGlobals(SetupSheetName) {
   var scriptProperties = PropertiesService.getScriptProperties();
   scriptProperties.deleteAllProperties();  
   scriptProperties.setProperties(Globals);
+  // Sets the user property 'LastSubmitTimestamp'.
+  scriptProperties.setProperty('LastSubmitTimestamp', '');
   
   Logger.log(func + Step + Globals['ErrorMessage']);
   if (Globals['ErrorMessage']){
