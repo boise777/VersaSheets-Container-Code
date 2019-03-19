@@ -1,5 +1,4 @@
-/********************************* Build 3/14/2019 (rev 1) **********************************
-
+/********************************* Build 3/18/2019 (rev 3) **********************************
 
  DESCRIPTION:
     
@@ -16,8 +15,7 @@
    Copyright (c) 2019 by Stephen P. Germain
    
  NOTES:
-
-   >>>>>> Change "XXXonOpen()" to "onOpen()" when used in host container, if necessary
+ 
    >>>>>> Update the Tools, Script, Resources Library Identifier to "VersaSheetsCommon" in host container
 
 
@@ -417,7 +415,7 @@ function Director(CallingFunction, bNeedParams, e) {
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);
         
-        VersaSheetsCommon.FixSubmitError(oCommon);
+        VersaSheetsCommon.RestoreRows(oCommon);
         
         break;
        
