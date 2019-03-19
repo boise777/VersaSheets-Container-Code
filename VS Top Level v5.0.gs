@@ -415,7 +415,7 @@ function Director(CallingFunction, bNeedParams, e) {
         Logger.log(func + Step + ' Executing "' + CallingFunction + '", SilentMode: ' 
                    + oCommon.bSilentMode);
         
-        VersaSheetsCommon.FixSubmitError(oCommon);
+        VersaSheetsCommon.RestoreRows(oCommon);
         
         break;
        
